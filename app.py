@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # Master list of names
 master_names = [
@@ -33,17 +34,28 @@ master_names = [
 
 st.title("Name Completion Checker")
 
-st.write("Paste the names you want to check below:")
+st.write("Paste the names you want to check below (one per line):")
 
 # Input box for user-pasted names
-input_names = st.text_area("Enter names (one per line)").splitlines()
+input_names = st.text_area("Enter names").splitlines()
 
 if st.button("Check Completion"):
-    completed = [name for name in input_names if name.strip() in master_names]
-    not_completed = [name for name in input_names if name.strip() not in master_names]
+    # Strip spaces from input
+    input_names = [name.strip() for name in input_names if name.strip()]
     
-    st.subheader("✅ Completed Names")
-    st.write(completed if completed else "None")
+    completed = [name for name in input_names if name in master_names]
+    not_completed = [name for name in input_names if name not in master_names]
     
-    st.subheader("❌ Not Completed Names")
-    st.write(not_completed if not_completed else "None")
+    # Make both lists the same length for table display
+    max_len = max(len(completed), len(not_completed))
+    completed += [""] * (max_len - len(completed))
+    not_completed += [""] * (max_len - len(not_completed))
+    
+    # Create dataframe
+    df = pd.DataFrame({
+        "Completed": completed,
+        "Not Completed": not_completed
+    })
+    
+    st.subheader("✅ Result Table")
+    st.dataframe(df)
