@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # Master/source list of names
 master_names = [
@@ -31,20 +32,30 @@ master_names = [
     "Anandha Rupan Venkatesan"
 ]
 
-st.title("Uncompleted Names Checker")
+st.title("Completed vs Not Completed Names")
 st.write("Paste the names you have completed below (one per line):")
 
 # Input names from user
-completed_names = st.text_area("Enter completed names").splitlines()
-completed_names = [name.strip() for name in completed_names if name.strip()]
+completed_input = st.text_area("Enter completed names").splitlines()
+completed_input = [name.strip() for name in completed_input if name.strip()]
 
-if st.button("Show Uncompleted Names"):
-    # Names in master list that are NOT in the pasted completed names
-    uncompleted_names = [name for name in master_names if name not in completed_names]
+if st.button("Show Table"):
+    # Names that are actually completed (present in master list)
+    completed_names = [name for name in completed_input if name in master_names]
 
-    st.subheader("❌ Uncompleted Names")
-    if uncompleted_names:
-        for name in uncompleted_names:
-            st.write(name)
-    else:
-        st.write("All names are completed ✅")
+    # Names not completed (in master list but not in completed_input)
+    not_completed_names = [name for name in master_names if name not in completed_names]
+
+    # Make both lists same length for display
+    max_len = max(len(completed_names), len(not_completed_names))
+    completed_names += [""] * (max_len - len(completed_names))
+    not_completed_names += [""] * (max_len - len(not_completed_names))
+
+    # Create a dataframe for table display
+    df = pd.DataFrame({
+        "✅ Completed": completed_names,
+        "❌ Not Completed": not_completed_names
+    })
+
+    st.subheader("Result Table")
+    st.dataframe(df)
