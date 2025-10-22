@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Master/source list of names
-source_names = [
+master_names = [
     "Lakshmi Narayana Rao",
     "Ramesh Polisetty",
     "Gayatri Ruttala",
@@ -32,19 +32,19 @@ source_names = [
 ]
 
 st.title("Uncompleted Names Checker")
-st.write("Paste the names you want to check below (one per line):")
+st.write("Paste the names you have completed below (one per line):")
 
-# Input names
-input_names = st.text_area("Enter names").splitlines()
-input_names = [name.strip() for name in input_names if name.strip()]
+# Input names from user
+completed_names = st.text_area("Enter completed names").splitlines()
+completed_names = [name.strip() for name in completed_names if name.strip()]
 
-if st.button("Check Uncompleted Names"):
-    # Find names that are not in source/master list
-    uncompleted = [name for name in input_names if name not in source_names]
+if st.button("Show Uncompleted Names"):
+    # Names in master list that are NOT in the pasted completed names
+    uncompleted_names = [name for name in master_names if name not in completed_names]
 
     st.subheader("❌ Uncompleted Names")
-    if uncompleted:
-        for name in uncompleted:
+    if uncompleted_names:
+        for name in uncompleted_names:
             st.write(name)
     else:
         st.write("All names are completed ✅")
